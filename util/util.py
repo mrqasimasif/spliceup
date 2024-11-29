@@ -57,3 +57,10 @@ def save_result(image_t, dataroot):
     path = Path(f"{dataroot}/out")
     path.mkdir(exist_ok=True, parents=True)
     image.save(f"{path}/output.png")
+
+def save_after_1000_epoches(image_t, dataroot, epoch):
+    image = ToPILImage()(image_t)
+    path = Path(f"{dataroot}/out")
+    if epoch > 500 and epoch%3==0:
+      path.mkdir(exist_ok=True, parents=True)
+      image.save(f"{path}/output{epoch//10}.png")

@@ -4,13 +4,14 @@ import random
 from data.Dataset import SingleImageDataset
 from models.model import Model
 from util.losses import LossG
-from util.util import get_scheduler, get_optimizer, save_result
+from util.util import get_scheduler, get_optimizer, save_result, save_after_1000_epoches
 import yaml
 from argparse import ArgumentParser
 from tqdm import tqdm
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-
+# global epoch
+epoch_num = 0
 
 def train_model(dataroot, callback=None):
     with open("conf/default/config.yaml", "r") as f:
@@ -50,6 +51,7 @@ def train_model(dataroot, callback=None):
 
     with tqdm(range(1, cfg['n_epochs'] + 1)) as tepoch:
         for epoch in tepoch:
+            epoch_num = epoch
             inputs = dataset[0]
             for key in inputs:
                 inputs[key] = inputs[key].to(device)
@@ -71,7 +73,8 @@ def train_model(dataroot, callback=None):
                 img_A = dataset.get_A().to(device)
                 with torch.no_grad():
                     output = model.netG(img_A)
-                save_result(output[0], cfg['dataroot'])
+                #save_result(output[0], cfg['dataroot'])
+                save_after_1000_epoches(output[0], cfg['dataroot'], epoch)
                 if callback is not None:
                     callback(output[0])
 
@@ -79,6 +82,9 @@ def train_model(dataroot, callback=None):
             optimizer.step()
             scheduler.step()
 
+
+def get_epoch_number():
+    return epoch_num
 
 if __name__ == '__main__':
     parser = ArgumentParser()
