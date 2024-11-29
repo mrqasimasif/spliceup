@@ -38,5 +38,5 @@ lr: 0.002
 
 log_images_freq: 10
 
-batch_size: 16
+batch_size: 8
 
